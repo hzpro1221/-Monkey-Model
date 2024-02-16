@@ -14,7 +14,7 @@ class BERT(nn.Module):
 		
 		# Đóng băng tham số
 		for param in self.BERT.parameters():
-    		param.requires_grad = False
+			param.requires_grad = False
 
 	def forward(text):
 		encoded_input = self.tokenizer(text, return_tensors="pt")
