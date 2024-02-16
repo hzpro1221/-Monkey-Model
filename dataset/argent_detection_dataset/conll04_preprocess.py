@@ -5,6 +5,9 @@ from KGRAPH.entities import Token, Conll04Dataset, Span_candidate, Document
 import KGRAPH.entities 
 import json
 
+def custom_collate(data):
+	return data
+	
 def conll04_preprocess(batch_size):
 	# Tải xuống Dataset
 	# !wget https://lavis.cs.hs-rm.de/storage/spert/public/datasets/conll04/conll04_train.json
@@ -75,7 +78,7 @@ def conll04_preprocess(batch_size):
 	
 	train_data = Conll04Dataset(dataset_ids=dataset_ids, dataset_candidates=dataset_candidates, dataset_labels=dataset_labels)
 
-	train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+	train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True, collate_fn=custom_collate)
   	# dev_dataloader = DataLoader(dev_data, batch_size=batch_size, shuffle=True)
   	# test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 

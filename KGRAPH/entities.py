@@ -45,4 +45,4 @@ class Conll04Dataset(Dataset):
 		return len(self.dataset_ids)
 
 	def __getitem__(self, idx):
-		return self.dataset_ids[idx], self.dataset_candidates[idx], self.dataset_labels[idx]
+		return {"dataset_ids": self.dataset_ids[idx], "dataset_candidates": self.dataset_candidates[idx], "dataset_labels": self.dataset_labels[idx]}
