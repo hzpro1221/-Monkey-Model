@@ -14,7 +14,7 @@ class Agent:
 
 # Do sự không đồng nhất giữa cách chia token trong dataset và cách chia token trong tokenizer 
 class Token:
-	def __init__(self, start: int, end: int, ids: list, token: str):
+	def __init__(self, start: int, end: int, ids: list):
 		self.start = start
 		self.end = end
 		self.ids = ids
@@ -29,7 +29,7 @@ class Document:
 
 # Kiểu dành cho Candidate 
 class Span_candidate:
-  def _init__(self, start, end):
+  def __init__(self, start, end):
     self.start = start
     self.end = end
 

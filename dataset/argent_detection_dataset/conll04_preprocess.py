@@ -5,7 +5,7 @@ from KGRAPH.entities import Token, Conll04Dataset, Span_candidate, Document
 import KGRAPH.entities 
 import json
 
-def conll04_processe(batch_size):
+def conll04_preprocess(batch_size):
 	# Tải xuống Dataset
 	# !wget https://lavis.cs.hs-rm.de/storage/spert/public/datasets/conll04/conll04_train.json
 	# !wget https://lavis.cs.hs-rm.de/storage/spert/public/datasets/conll04/conll04_dev.json

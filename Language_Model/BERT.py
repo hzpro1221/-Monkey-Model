@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 from transformers import AutoTokenizer, AutoModel
+import os
 
 class BERT(nn.Module):
 	def __init__(self, ckpt_dir='./checkpoint/Language_Model', name='BERT'):
-		super(BERT, self).__init__
+		super(BERT, self).__init__()
 		self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-		self.BERT = Automodel.from_pretrained("bert-base-uncased")
+		self.BERT = AutoModel.from_pretrained("bert-base-uncased")
 
 		self.name = name
 		self.checkpoint_dir = ckpt_dir

@@ -5,9 +5,9 @@ sys.path.append('/content/MonkeyModel')
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
-from KGRAPH.Agent_Classifier import Agent_classifier_model
-from dataset.argent_detection_dataset import conll04_preprocess 
-from Language_Model import BERT
+from KGRAPH.Agent_Classifier.Agent_classifier_model import Agent_Classifier
+from dataset.argent_detection_dataset.conll04_preprocess import conll04_processe
+from Language_Model.BERT import BERT
 from time import time
 
 if __name__ == '__main__':
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
 	# trainer
 	for epoch in range(num_eps):
-		for i, batch in enumerate(train_loader):
+		for i, batch in enumerate(train_dataloader):
 			optim.zero_grad()
 			document_ids, document_candidates, document_labels = batch
 			sentence = []
