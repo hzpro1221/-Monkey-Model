@@ -12,7 +12,7 @@ class Agent:
 
 # Do sự không đồng nhất giữa cách chia token trong dataset và cách chia token trong tokenizer 
 class Token:
-	def __init__(self, ,start: int, end: int, ids: list, token: str):
+	def __init__(self, start: int, end: int, ids: list, token: str):
 		self.start = start
 		self.end = end
 		self.ids = ids
