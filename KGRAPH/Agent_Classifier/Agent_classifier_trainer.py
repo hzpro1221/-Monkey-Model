@@ -1,3 +1,7 @@
+# Set sys.path for python to look for package and module on Google Colab
+import sys
+sys.path.append('/content/MonkeyModel')
+
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
