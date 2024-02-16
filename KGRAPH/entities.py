@@ -1,3 +1,5 @@
+from torch.utils.data import Dataset
+
 # Trong Graph sẽ chỉ có 2 kiểu Node đó là Relation và Argent 
 class Relation:
 	def __init__(self, start: int, end: int):
