@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.optim import AdamW
 from KGRAPH.Agent_Classifier import Agent_classifier_model
 from dataset.argent_detection_dataset import conll04_preprocess 
-from KGRAPH.Language_Model import BERT
+from Language_Model import BERT
 
 if __name__ == '__main__':
 
