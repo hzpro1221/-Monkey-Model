@@ -40,15 +40,26 @@ if __name__ == '__main__':
 	for epoch in range(num_eps):
 		for i, batch in enumerate(train_dataloader):
 			optim.zero_grad()
-			document_ids = batch["dataset_ids"]
-			document_candidates = batch["dataset_candidates"]
-			document_labels = batch["dataset_labels"]
-			sentence = []
+			# print(batch)
+			# print(len(batch))
+			document_ids = []
+			document_candidates = []
+			document_labels = []
 
-			# Đưa token qua Mô hình ngôn ngữ -> Lấy ra last hidden state 
-			for token in document_ids:
-				sentence += token.ids
-			last_hidden_states = language_model.forward(sentence)
+			for sample in batch:
+				document_ids.append(sample["dataset_ids"])
+				document_candidates.append(sample["dataset_candidates"])
+				document_labels.append(sample["dataset_labels"])
+
+			sentences = [] 
+
+			# Đưa token qua Mô hình ngôn ngữ -> Lấy ra last hidden state
+			for document in document_ids:
+				for token in document:
+					sentence = []
+					sentence += token.ids
+				sentences.append(sentence) 
+			last_hidden_states = language_model.forward(sentences)
 
 			# Xây dựng mask cho các candidate, chồng nó lên nhau
 			# Tạo mask full 0

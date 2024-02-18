@@ -45,7 +45,7 @@ class Agent_Classifier(nn.Module):
 	def forward(self, span_masks):
 
 		# Tổng tất cả các vector biểu diễn các token trong span theo chiều row  
-		x = torch.sum(spans_masks, dim=1) 
+		x = torch.sum(span_masks, dim=-2) 
 
 		# Layer Normalize 
 		x = self.layer_norm1.forward(x)
@@ -60,7 +60,7 @@ class Agent_Classifier(nn.Module):
 		x = self.FeedForward1_layer_4(x)
 
 		# Tổng tất cả các vector biểu diễn các token trong span theo chiều column
-		x = torch.sum(x, dim=1)
+		x = torch.sum(x, dim=-1)
 
 		# Layer Normalize  
 		x = self.layer_norm2().forward(x)

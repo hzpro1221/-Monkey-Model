@@ -3,11 +3,14 @@ import torch.nn as nn
 from transformers import AutoTokenizer, AutoModel
 import os
 
-class BERT(nn.Module):
+class BERT(nn.Module): 
 	def __init__(self, ckpt_dir='./checkpoint/Language_Model', name='BERT'):
 		super(BERT, self).__init__()
 		self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 		self.BERT = AutoModel.from_pretrained("bert-base-uncased")
+
+		# Max sequence length of input is 1024 token
+		self.max_length = 1024
 
 		self.name = name
 		self.checkpoint_dir = ckpt_dir
@@ -17,9 +20,9 @@ class BERT(nn.Module):
 		for param in self.BERT.parameters():
 			param.requires_grad = False
 
-	def forward(text):
-		encoded_input = self.tokenizer(text, return_tensors="pt")
-		output = model(**encoded_input)
+	def forward(self, text):
+		encoded_input = self.tokenizer(text, return_tensors="pt", padding="max_length", max_length=self.max_length)
+		output = self.BERT(**encoded_input)
 		return output
 
 	def save_checkpoint(self):
