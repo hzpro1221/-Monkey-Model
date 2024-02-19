@@ -20,8 +20,26 @@ class BERT(nn.Module):
 		for param in self.BERT.parameters():
 			param.requires_grad = False
 
-	def forward(self, text):
-		encoded_input = self.tokenizer(text, return_tensors="pt", padding="max_length", max_length=self.max_length)
+	def forward(self, sentences):
+		# Add [CLS] token, [SEP] token and padding
+		for sentence in sentences:
+			sentence += [0] * (self.max_length - len(sentence)) # Add padding
+			sentence.insert(0, 101) # Add [CLS] token
+			sentence.insert(-1, 102) # Add [SEP] token
+
+		# Create 'input_ids'
+		input_ids = torch.tensor(sentences)
+
+		# Create 'token_type_ids'
+		token_type_ids_sample = [0 for _ in range(self.max_length)]
+		token_type_ids = torch.tensor([token_type_ids_sample for _ in range(len(sentences))])
+
+		# Create 'attention_mask'
+		attention_mask_sample = [1 for _ in range(self.max_length)]
+		attention_mask = torch.tensor([attention_mask_sample for _ in range(len(sentences))])
+
+		encoded_input = {'input_ids': input_ids, 'token_type_ids': token_type_ids, 'attention_mask': attention_mask}
+			
 		output = self.BERT(**encoded_input)
 		return output
 

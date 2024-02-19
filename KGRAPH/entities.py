@@ -21,10 +21,9 @@ class Token:
 
 # Kiểu dành cho Document
 class Document:
-  def __init__(self, tokens, length):
-    self.tokens = tokens
-    self.length = length
-
+	def __init__(self, tokens, length):
+		self.tokens = tokens
+		self.length = length
 
 
 # Kiểu dành cho Candidate 

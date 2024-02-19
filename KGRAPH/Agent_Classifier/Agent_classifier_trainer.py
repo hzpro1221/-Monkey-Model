@@ -55,10 +55,11 @@ if __name__ == '__main__':
 
 			# Đưa token qua Mô hình ngôn ngữ -> Lấy ra last hidden state
 			for document in document_ids:
-				for token in document:
-					sentence = []
+				sentence = []
+				for token in document.tokens:
 					sentence += token.ids
 				sentences.append(sentence) 
+
 			last_hidden_states = language_model.forward(sentences)
 
 			# Xây dựng mask cho các candidate, chồng nó lên nhau
