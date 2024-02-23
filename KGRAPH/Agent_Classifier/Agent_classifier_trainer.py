@@ -87,15 +87,15 @@ if __name__ == '__main__':
 			for candidate_mask in candidate_masks:
 				candidate_mask += (max_num_candidate - len(candidate_mask)) * padding
 
-			print(f"Shape for candidates: {len(candidate_masks[0])} {len(candidate_masks[1])} {len(candidate_masks[2])} {len(candidate_masks[3])}")
+			# print(f"Shape for candidates: {len(candidate_masks[0])} {len(candidate_masks[1])} {len(candidate_masks[2])} {len(candidate_masks[3])}")
 
 			# Convert candidate masks into tensor
 			candidate_masks = torch.tensor(candidate_masks)
 
-			print(f"Shape: {candidate_masks.shape}")
+			# print(f"Shape: {candidate_masks.shape}")
 
 			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
-			last_hidden_states_mask = last_hidden_state.unsqueeze(0).repeat(len(document_candidates), 1, 1)
+			last_hidden_states_masks = last_hidden_state.unsqueeze(1).repeat(1, max_num_candidate, 1, 1) # batch_size * max_num_candidate * 512 * 768
 
 			# Nhân candidate mask với last_hidden_states mask
 			span_masks = candidate_mask.view(len(document_candidates),document_ids.length, 1).repeat(1, 1, 768) * last_hidden_states_mask # d_model = 768
