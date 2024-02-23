@@ -87,10 +87,12 @@ if __name__ == '__main__':
 			for candidate_mask in candidate_masks:
 				candidate_mask += (max_num_candidate - len(candidate_mask)) * padding
 
-			print(f"number of document: {len(candidate_masks)}")
-			print(f"number of candidate in document 0: {len(candidate_masks[0])}")
-			print(f"dimension of candidate: {len(candidate_masks[0][0])}")
+			print(f"Shape for candidates: {len(candidate_masks[0])} {len(candidate_masks[1])} {len(candidate_masks[2])} {len(candidate_masks[3])}")
 
+			# Convert candidate masks into tensor
+			candidate_masks = torch.tensor(candidate_masks)
+
+			print(f"Shape: {candidate_masks.shape}")
 
 			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
 			last_hidden_states_mask = last_hidden_state.unsqueeze(0).repeat(len(document_candidates), 1, 1)
