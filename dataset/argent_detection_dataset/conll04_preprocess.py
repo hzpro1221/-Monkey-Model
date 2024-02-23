@@ -60,7 +60,7 @@ def conll04_preprocess(batch_size):
 		for length in range(1, max_len+1):
 			for start in range(0, len(document["tokens"]) - length + 1):
 				add = 0
-				candidate_mask = Span_candidate(start, start + length)
+				candidate_mask = Span_candidate(dataset_ids[i][start], dataset_ids[i][start + length])
 				# print(f'{start} {start + length} {document["entities"][0]["start"]} {document["entities"][0]["end"]}')
 				# Check điều kiện để add vào label mask
 				# Nếu candidate trùng với label trong dataset -> 1

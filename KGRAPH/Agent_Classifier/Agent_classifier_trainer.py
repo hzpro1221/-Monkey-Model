@@ -24,11 +24,11 @@ if __name__ == '__main__':
 
 	# Hyperparameter
 	num_eps = 10
-	batch_size = 32
+	batch_size = 1
 	lr = 5e-5
 
 	# Put data to dataloader
-	train_dataloader = conll04_preprocess(batch_size=4)
+	train_dataloader = conll04_preprocess(batch_size=batch_size)
 
 	# Optimizer
 	optim = AdamW(model.parameters(), lr=lr)
@@ -61,15 +61,23 @@ if __name__ == '__main__':
 				sentences.append(sentence) 
 
 			last_hidden_states = language_model.forward(sentences)
-
+			# for candidate in document_candidates:
+			# 	print(f"num_candidate: {len(candidate)} document_length: {document_ids.length}")
 			# Xây dựng mask cho các candidate, chồng nó lên nhau
 			# Tạo mask full 0
-			candidate_mask = torch.zeros(len(document_candidates),document_ids.length)
+			candidate_masks = []
+			for i, document_candidate in enumerate(document_candidates):
+				candidate_mask = torch.zeros(len(document_candidate),512) # 512 is the maximum length of input
+				candidate_masks.append(candidate_mask)
 
 			# Thay thế các vị trí có token của span -> 1
-			for i, candidate in enumerate(document_candidates):
-				for pos in range(cadidate.start, candidate.end):
-					candidate_mask[i][pos] = 1
+			for i, candidate_mask in enumerate(candidate_masks):
+				for j, candidate in enumerate(document_candidates[i]):
+					for pos in range(cadidate.start.start, candidate.end.end):
+						candidate_mask[j][pos] = 1
+
+			for candidate_mask in candidate_masks:
+				print(candidate_mask)
 
 			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
 			last_hidden_states_mask = last_hidden_state.unsqueeze(0).repeat(len(document_candidates), 1, 1)

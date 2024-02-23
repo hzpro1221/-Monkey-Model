@@ -9,8 +9,8 @@ class BERT(nn.Module):
 		self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 		self.BERT = AutoModel.from_pretrained("bert-base-uncased")
 
-		# Max sequence length of input is 1024 token
-		self.max_length = 1024
+		# Max sequence length of input is 512 token
+		self.max_length = 512
 
 		self.name = name
 		self.checkpoint_dir = ckpt_dir
