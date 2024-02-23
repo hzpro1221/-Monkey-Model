@@ -63,10 +63,12 @@ if __name__ == '__main__':
 			last_hidden_states = language_model.forward(sentences)
 
 			# Xây dựng mask cho các candidate, chồng nó lên nhau
+			padding = [[0 for _ in range(512)]] # 512 is the maximum length of input
 			# Tạo mask full 0
 			candidate_masks = []
-			for i, document_candidate in enumerate(document_candidates):
-				candidate_mask = torch.zeros(len(document_candidate),512) # 512 is the maximum length of input
+			for i, document_candidate in enumerate(document_candidates):  
+				candidate_mask = []
+				candidate_mask += len(document_candidate) * padding
 				candidate_masks.append(candidate_mask)
 
 			# Thay thế các vị trí có token của span -> 1
@@ -75,7 +77,6 @@ if __name__ == '__main__':
 					for pos in range(candidate.start.start, candidate.end.end):
 						candidate_mask[j][pos] = 1
 
-			padding = torch.zeros(len(document_candidate),512) # 512 is the maximum length of input
 			# Tìm sample có số candidate lớn nhất trong batch
 			max_num_candidate = 0
 			for candidate_mask in candidate_masks:
@@ -84,7 +85,7 @@ if __name__ == '__main__':
 
 			# Thêm padding để kích cỡ ma trận các candidate của các sample bằng nhau
 			for candidate_mask in candidate_masks:
-				candidate_mask += padding*(max_num_candidate - len(candidate_mask))
+				candidate_mask += (max_num_candidate - len(candidate_mask)) * padding
 
 			print(f"number of document: {len(candidate_masks)}")
 			print(f"number of candidate in document 0: {len(candidate_masks[0])}")
