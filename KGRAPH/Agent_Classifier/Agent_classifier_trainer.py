@@ -78,17 +78,17 @@ if __name__ == '__main__':
 			padding = torch.zeros(len(document_candidate),512) # 512 is the maximum length of input
 			# Tìm sample có số candidate lớn nhất trong batch
 			max_num_candidate = 0
-			for document_candidate in document_candidates:
-				if len(document_candidate) > max_num_candidate:
-					max_num_candidate = len(document_candidate)
+			for candidate_mask in candidate_masks:
+				if len(candidate_mask) > max_num_candidate:
+					max_num_candidate = len(candidate_mask)
 
 			# Thêm padding để kích cỡ ma trận các candidate của các sample bằng nhau
-			for document_candidate in document_candidates:
-				document_candidate += padding*(max_num_candidate - len(document_candidate))
+			for candidate_mask in candidate_masks:
+				candidate_mask += padding*(max_num_candidate - len(candidate_mask))
 
-			print(f"number of document: {len(document_candidates)}")
-			print(f"number of candidate in document 0: {len(document_candidates[0])}")
-			print(f"dimension of candidate: {len(document_candidates[0][0])}")
+			print(f"number of document: {len(candidate_masks)}")
+			print(f"number of candidate in document 0: {len(candidate_masks[0])}")
+			print(f"dimension of candidate: {len(candidate_masks[0][0])}")
 
 
 			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
