@@ -77,7 +77,8 @@ if __name__ == '__main__':
 						candidate_mask[j][pos] = 1
 
 			for candidate_mask in candidate_masks:
-				print(candidate_mask)
+				print(f"Number of candidate: {len(candidate_mask)}")
+				print(f"Dimension of candidate: {len(candidate_mask[0])}")
 
 			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
 			last_hidden_states_mask = last_hidden_state.unsqueeze(0).repeat(len(document_candidates), 1, 1)
