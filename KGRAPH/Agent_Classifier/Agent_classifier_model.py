@@ -46,10 +46,10 @@ class Agent_Classifier(nn.Module):
 
 		print("------------start Agent_Classifier---------------")
 		# Tổng tất cả các vector biểu diễn các token trong span theo chiều row  
-		print(f"Vector input: {x} {x.shape}")
+		print(f"Vector input: {span_masks} {span_masks.shape}")
+		# print(f"Compare: {torch.eq(span_masks[0][0], span_masks[0][1])} {torch.eq(span_masks[0][0], span_masks[0][300])}")
 		x = torch.sum(span_masks, dim=-2) 
 		print(f"Tổng tất cả các vector biểu diễn các token trong span theo chiều row: {x} {x.shape}")
-
 		# Layer Normalize 
 		x = self.layer_norm1.forward(x)
 
