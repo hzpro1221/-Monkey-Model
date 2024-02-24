@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModel
 import os
 
 class BERT(nn.Module): 
-	def __init__(self, ckpt_dir='./checkpoint/Language_Model', name='BERT', device):
+	def __init__(self, device, ckpt_dir='./checkpoint/Language_Model', name='BERT'):
 		super(BERT, self).__init__()
 		self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 		self.BERT = AutoModel.from_pretrained("bert-base-uncased")

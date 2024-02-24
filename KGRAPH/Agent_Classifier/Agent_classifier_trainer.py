@@ -87,14 +87,14 @@ if __name__ == '__main__':
 			# print(f"Shape for candidates: {len(candidate_masks[0])} {len(candidate_masks[1])} {len(candidate_masks[2])} {len(candidate_masks[3])}")
 
 			# Convert candidate masks into tensor
-			candidate_masks = torch.tensor(candidate_masks)
+			candidate_masks = torch.tensor(candidate_masks).to(device)
 
 			print(f"Shape: {candidate_masks.shape}")
 
-			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
+			print("Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate") 
 			last_hidden_states_masks = last_hidden_states.last_hidden_state.unsqueeze(1).repeat(1, max_num_candidate, 1, 1) # batch_size * num_candidate * 512 * 768
 
-			# Nhân candidate mask với last_hidden_states mask
+			print("Nhân candidate mask với last_hidden_states mask")
 			span_masks = candidate_masks.view(batch_size, max_num_candidate, 512, 1).repeat(1, 1, 1, 768) * last_hidden_states_masks # d_model = 768, max_sequence_len = 512
 
 			print("Đưa vào mô hình dự đoán") 
