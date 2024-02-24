@@ -13,8 +13,8 @@ def conll04_preprocess(batch_size):
 	# !wget https://lavis.cs.hs-rm.de/storage/spert/public/datasets/conll04/conll04_train.json
 	# !wget https://lavis.cs.hs-rm.de/storage/spert/public/datasets/conll04/conll04_dev.json
 	# !wget https://lavis.cs.hs-rm.de/storage/spert/public/datasets/conll04/conll04_test.json
-
-	# Mở dataset
+	print("-----------------------Start conll04_preprocess-----------------------")
+	print("Mở dataset")
 	# Điền đường dẫn thư mục chứa dataset
 	with open("/content/conll04_train.json") as f: 
 		train_data = json.load(f)
@@ -28,10 +28,10 @@ def conll04_preprocess(batch_size):
 	#	- Agent mask: Start và End
 	#	- Label mask: [0, 0, 0, 1, 1, 0, 0, ...]
 
-	# Load tokenizer
+	print("Load tokenizer")
 	tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased") # BERT
 
-	# Lấy ra Ids của text qua tokenizer, start và end của token
+	print("Lấy ra Ids của text qua tokenizer, start và end của token")
 	dataset_ids = []
 	for document in train_data:
 		start = 0
@@ -47,7 +47,7 @@ def conll04_preprocess(batch_size):
 		document_processed = Document(document_tokens, document_length)
 		dataset_ids.append(document_processed)
 
-	# Build candidate_mask and label_mask
+	print(f"Build candidate_mask and label_mask")
 	# Max len = 5
 	dataset_candidates = []
 	dataset_labels = []
@@ -79,6 +79,7 @@ def conll04_preprocess(batch_size):
 	train_data = Conll04Dataset(dataset_ids=dataset_ids, dataset_candidates=dataset_candidates, dataset_labels=dataset_labels)
 
 	train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True, collate_fn=custom_collate)
+	print("-----------------------Finish conll04_preprocess-----------------------")	
   	# dev_dataloader = DataLoader(dev_data, batch_size=batch_size, shuffle=True)
   	# test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 

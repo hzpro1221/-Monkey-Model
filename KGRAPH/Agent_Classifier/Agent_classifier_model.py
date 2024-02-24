@@ -28,10 +28,10 @@ class Agent_Classifier(nn.Module):
 		self.FeedForward1_layer_4 = nn.Linear(layer_size, d_model)
 
 		# Layer Normalize
-		self.layer_norm2 = LayerNorm(2550) # Max candidate
+		self.layer_norm2 = LayerNorm(500) # Max candidate
 
 		# Feed forward
-		self.FeedForward2_layer_1 = nn.Linear(2550, layer_size) # Max candidate, layer size
+		self.FeedForward2_layer_1 = nn.Linear(500, layer_size) # Max candidate, layer size
 		self.FeedForward2_activation_1 = nn.ReLU() 
 		self.FeedForward2_layer_2 = nn.Linear(layer_size, layer_size)
 		self.FeedForward2_activation_2 = nn.ReLU()
@@ -44,6 +44,7 @@ class Agent_Classifier(nn.Module):
 
 	def forward(self, span_masks):
 
+		print("------------start Agent_Classifier---------------")
 		# Tổng tất cả các vector biểu diễn các token trong span theo chiều row  
 		x = torch.sum(span_masks, dim=-2) 
 
@@ -73,7 +74,7 @@ class Agent_Classifier(nn.Module):
 		x = self.FeedForward2_layer_3(x)
 		x = self.FeedForward2_activation_3(x)
 		x = self.FeedForward2_layer_4(x)
-
+		print("------------finish Agent_Classifier---------------")
 		return x 
 
 	def save_checkpoint(self):

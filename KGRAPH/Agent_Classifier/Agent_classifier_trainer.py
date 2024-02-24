@@ -19,7 +19,7 @@ if __name__ == '__main__':
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 	# Định nghĩa các mô hình
-	language_model = BERT().to(device) # d_model = 768
+	language_model = BERT(device=device).to(device) # d_model = 768
 	model = Agent_Classifier(d_model=768).to(device)
 
 	# Hyperparameter
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 	batch_size = 4
 	lr = 5e-5
 
-	# Put data to dataloader
+	print("Put data to dataloader")
 	train_dataloader = conll04_preprocess(batch_size=batch_size)
 
 	# Optimizer
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
 			sentences = [] 
 
-			# Đưa token qua Mô hình ngôn ngữ -> Lấy ra last hidden state
+			print("Đưa token qua Mô hình ngôn ngữ -> Lấy ra last hidden state")
 			for document in document_ids:
 				sentence = []
 				for token in document.tokens:
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
 			last_hidden_states = language_model.forward(sentences)
 
-			# Xây dựng mask cho các candidate, chồng nó lên nhau
+			print("Xây dựng mask cho các candidate, chồng nó lên nhau")
 			padding = [[0 for _ in range(512)]] # 512 is the maximum length of input
 			# Tạo mask full 0
 			candidate_masks = []
@@ -77,8 +77,8 @@ if __name__ == '__main__':
 					for pos in range(candidate.start.start, candidate.end.end):
 						candidate_mask[j][pos] = 1
 
-			# Tìm sample có số candidate lớn nhất trong batch
-			max_num_candidate = 2550
+			# Số candidate lớn nhất trong batch
+			max_num_candidate = 500 
 
 			# Thêm padding để kích cỡ ma trận các candidate của các sample bằng nhau
 			for candidate_mask in candidate_masks:
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 			# Convert candidate masks into tensor
 			candidate_masks = torch.tensor(candidate_masks)
 
-			# print(f"Shape: {candidate_masks.shape}")
+			print(f"Shape: {candidate_masks.shape}")
 
 			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
 			last_hidden_states_masks = last_hidden_states.last_hidden_state.unsqueeze(1).repeat(1, max_num_candidate, 1, 1) # batch_size * num_candidate * 512 * 768
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 			# Nhân candidate mask với last_hidden_states mask
 			span_masks = candidate_masks.view(batch_size, max_num_candidate, 512, 1).repeat(1, 1, 1, 768) * last_hidden_states_masks # d_model = 768, max_sequence_len = 512
 
-			# Đưa vào mô hình dự đoán 
+			print("Đưa vào mô hình dự đoán") 
 			logits = model.forward(span_masks)
 
 			# Tính loss giữa dự đoán và label

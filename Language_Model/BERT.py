@@ -4,10 +4,12 @@ from transformers import AutoTokenizer, AutoModel
 import os
 
 class BERT(nn.Module): 
-	def __init__(self, ckpt_dir='./checkpoint/Language_Model', name='BERT'):
+	def __init__(self, ckpt_dir='./checkpoint/Language_Model', name='BERT', device):
 		super(BERT, self).__init__()
 		self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 		self.BERT = AutoModel.from_pretrained("bert-base-uncased")
+
+		self.device = device
 
 		# Max sequence length of input is 512 token
 		self.max_length = 512
@@ -28,18 +30,18 @@ class BERT(nn.Module):
 			sentence += [0] * (self.max_length - len(sentence)) # Add padding
 
 		# Create 'input_ids'
-		input_ids = torch.tensor(sentences)
+		input_ids = torch.tensor(sentences).to(self.device)
 
 		# Create 'token_type_ids'
 		token_type_ids_sample = [0 for _ in range(self.max_length)]
-		token_type_ids = torch.tensor([token_type_ids_sample for _ in range(len(sentences))])
+		token_type_ids = torch.tensor([token_type_ids_sample for _ in range(len(sentences))]).to(self.device)
 
 		# Create 'attention_mask'
 		attention_mask = []
 		for sentence in sentences:
 			attention_mask_sample = [int(i != 0) for i in sentence]
 			attention_mask.append(attention_mask_sample)
-		attention_mask = torch.tensor(attention_mask)
+		attention_mask = torch.tensor(attention_mask).to(self.device)
 
 		encoded_input = {'input_ids': input_ids, 'token_type_ids': token_type_ids, 'attention_mask': attention_mask}
 			
