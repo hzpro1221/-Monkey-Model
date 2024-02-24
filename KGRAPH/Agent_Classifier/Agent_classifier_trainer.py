@@ -78,10 +78,7 @@ if __name__ == '__main__':
 						candidate_mask[j][pos] = 1
 
 			# Tìm sample có số candidate lớn nhất trong batch
-			max_num_candidate = 0
-			for candidate_mask in candidate_masks:
-				if len(candidate_mask) > max_num_candidate:
-					max_num_candidate = len(candidate_mask)
+			max_num_candidate = 2550
 
 			# Thêm padding để kích cỡ ma trận các candidate của các sample bằng nhau
 			for candidate_mask in candidate_masks:
@@ -95,10 +92,10 @@ if __name__ == '__main__':
 			# print(f"Shape: {candidate_masks.shape}")
 
 			# Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate 
-			last_hidden_states_masks = last_hidden_states.unsqueeze(1).repeat(1, max_num_candidate, 1, 1) # batch_size * num_candidate * 512 * 768
+			last_hidden_states_masks = last_hidden_states.last_hidden_state.unsqueeze(1).repeat(1, max_num_candidate, 1, 1) # batch_size * num_candidate * 512 * 768
 
 			# Nhân candidate mask với last_hidden_states mask
-			span_masks = candidate_mask.view(batch_size, max_num_candidate, 512, 1).repeat(1, 1, 1, 768) * last_hidden_states_mask # d_model = 768, max_sequence_len = 512
+			span_masks = candidate_masks.view(batch_size, max_num_candidate, 512, 1).repeat(1, 1, 1, 768) * last_hidden_states_masks # d_model = 768, max_sequence_len = 512
 
 			# Đưa vào mô hình dự đoán 
 			logits = model.forward(span_masks)

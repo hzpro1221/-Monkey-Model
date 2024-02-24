@@ -28,10 +28,10 @@ class Agent_Classifier(nn.Module):
 		self.FeedForward1_layer_4 = nn.Linear(layer_size, d_model)
 
 		# Layer Normalize
-		self.layer_norm2 = LayerNorm(d_model)
+		self.layer_norm2 = LayerNorm(2550) # Max candidate
 
 		# Feed forward
-		self.FeedForward2_layer_1 = nn.Linear(d_model, layer_size)
+		self.FeedForward2_layer_1 = nn.Linear(2550, layer_size) # Max candidate, layer size
 		self.FeedForward2_activation_1 = nn.ReLU() 
 		self.FeedForward2_layer_2 = nn.Linear(layer_size, layer_size)
 		self.FeedForward2_activation_2 = nn.ReLU()
@@ -63,7 +63,7 @@ class Agent_Classifier(nn.Module):
 		x = torch.sum(x, dim=-1)
 
 		# Layer Normalize  
-		x = self.layer_norm2().forward(x)
+		x = self.layer_norm2.forward(x)
 
 		# Feed forward
 		x = self.FeedForward2_layer_1(x)
