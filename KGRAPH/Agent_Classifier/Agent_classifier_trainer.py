@@ -101,7 +101,7 @@ if __name__ == '__main__':
 			span_masks = candidate_mask.view(batch_size, max_num_candidate, 512, 1).repeat(1, 1, 1, 768) * last_hidden_states_mask # d_model = 768, max_sequence_len = 512
 
 			# Đưa vào mô hình dự đoán 
-			logits = model.forward(spans_masks)
+			logits = model.forward(span_masks)
 
 			# Tính loss giữa dự đoán và label
 			output = loss(logits, document_labels).to(device)
