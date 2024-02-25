@@ -63,26 +63,29 @@ if __name__ == '__main__':
 			last_hidden_states = language_model.forward(sentences)
 
 			print("Xây dựng mask cho các candidate, chồng nó lên nhau")
-			padding = [[0 for _ in range(512)]] # 512 is the maximum length of input
-			# Tạo mask full 0
 			candidate_masks = []
 			for i, document_candidate in enumerate(document_candidates):  
 				candidate_mask = []
-				candidate_mask += len(document_candidate) * padding
 				candidate_masks.append(candidate_mask)
 
-			# Thay thế các vị trí có token của span -> 1
+
+			# Tạo mask full 0, thay thế các vị trí có token của span -> 1
 			for i, candidate_mask in enumerate(candidate_masks):
-				for j, candidate in enumerate(document_candidates[i]):
+				for candidate in enumerate(document_candidates[i]):
+					padding = [0 for _ in range(512)] # 512 is the maximum length of input
 					for pos in range(candidate.start.start, candidate.end.end):
-						candidate_mask[j][pos] = 1
-					print(f"sample {i}, candidate {j}: {candidate_mask}")
+						padding[pos] = 1
+						print(f"padding: {padding}")
+					candidate_mask.append(padding)
+					# print(f"sample {i}, candidate {j}: {candidate_mask}")
 			# Số candidate lớn nhất trong batch
 			max_num_candidate = 500 
 
+			padding_list = [[0 for _ in range(512)]]
 			# Thêm padding để kích cỡ ma trận các candidate của các sample bằng nhau
 			for candidate_mask in candidate_masks:
-				candidate_mask += (max_num_candidate - len(candidate_mask)) * padding
+				# print(f"padding: {padding}")
+				candidate_mask += (max_num_candidate - len(candidate_mask)) * padding_list
 
 
 			# print(f"Shape for candidates: {len(candidate_masks[0])} {len(candidate_masks[1])} {len(candidate_masks[2])} {len(candidate_masks[3])}")
