@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
 	# Hyperparameter
 	num_eps = 10
-	batch_size = 4
+	batch_size = 2
 	lr = 5e-5
 
 	# print("Put data to dataloader")
@@ -93,8 +93,8 @@ if __name__ == '__main__':
 
 			# Thêm padding tăng kích cỡ/Xóa bớt sample để bằng max_num_candidate
 			for label in document_labels:
-				if (max_num_candidate >= len(candidate_mask)):
-					label = (max_num_candidate - len(label)) * [0]
+				if (max_num_candidate >= len(label)):
+					label += (max_num_candidate - len(label)) * [0]
 				else:
 					for _ in range(len(label) - max_num_candidate):
 						label.pop()
@@ -115,13 +115,11 @@ if __name__ == '__main__':
 			# print("Đưa vào mô hình dự đoán") 
 			logits = model.forward(span_masks)
 
-			for i, label in enumerate(document_labels):
-				label += (max_num_candidate - len(label)) * [0]
 			document_labels = torch.tensor(document_labels).type(torch.FloatTensor).to(device)
 			# print(f"document_labels: {document_labels} {document_labels.shape}")
 			# print(f"logits shape: {logits.shape}")
 			# Tính loss giữa dự đoán và label
-			output = loss(logits.view(4, 500).type(torch.FloatTensor).to(device), document_labels)
+			output = loss(logits.view(batch_size, 500).type(torch.FloatTensor).to(device), document_labels)
 
 
 			# Backpropagation
