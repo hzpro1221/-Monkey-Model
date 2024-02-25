@@ -27,7 +27,7 @@ if __name__ == '__main__':
 	batch_size = 4
 	lr = 5e-5
 
-	print("Put data to dataloader")
+	# print("Put data to dataloader")
 	train_dataloader = conll04_preprocess(batch_size=batch_size)
 
 	# Optimizer
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
 			sentences = [] 
 
-			print("Đưa token qua Mô hình ngôn ngữ -> Lấy ra last hidden state")
+			# print("Đưa token qua Mô hình ngôn ngữ -> Lấy ra last hidden state")
 			for document in document_ids:
 				sentence = []
 				for token in document.tokens:
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
 			last_hidden_states = language_model.forward(sentences)
 
-			print("Xây dựng mask cho các candidate, chồng nó lên nhau")
+			# print("Xây dựng mask cho các candidate, chồng nó lên nhau")
 			candidate_masks = []
 			for i, document_candidate in enumerate(document_candidates):  
 				candidate_mask = []
@@ -77,50 +77,57 @@ if __name__ == '__main__':
 						padding[pos] = 1
 					candidate_mask.append(padding)
 					# print(f"sample {i}, candidate {j}: {candidate_mask}")
+
 			# Số candidate lớn nhất trong batch
 			max_num_candidate = 500 
 
-
 			padding_list = [[0 for _ in range(512)]]
-			# Thêm padding để kích cỡ ma trận các candidate của các sample bằng nhau
+			# Thêm padding để kích cỡ ma trận các candidate/Xóa bớt sample để bằng max_num_candidate
 			for candidate_mask in candidate_masks:
 				# print(f"padding: {padding}")
-				candidate_mask += (max_num_candidate - len(candidate_mask)) * padding_list
+				if (max_num_candidate >= len(candidate_mask)):
+					candidate_mask += (max_num_candidate - len(candidate_mask)) * padding_list
+				else:
+					for _ in range(len(candidate_mask) - max_num_candidate):
+						candidate_mask.pop()	
 
-			# Thêm padding vào label để kích cỡ thành 512
+			# Thêm padding tăng kích cỡ/Xóa bớt sample để bằng max_num_candidate
 			for label in document_labels:
-				label = (max_num_candidate - len(label)) * [0]
+				if (max_num_candidate >= len(candidate_mask)):
+					label = (max_num_candidate - len(label)) * [0]
+				else:
+					for _ in range(len(label) - max_num_candidate):
+						label.pop()
 
 			# print(f"Shape for candidates: {len(candidate_masks[0])} {len(candidate_masks[1])} {len(candidate_masks[2])} {len(candidate_masks[3])}")
 
 			# Convert candidate masks into tensor
 			candidate_masks = torch.tensor(candidate_masks).to(device)
 
-			print(f"candidate_masks: {candidate_masks} {candidate_masks.shape}")
+			# print(f"candidate_masks: {candidate_masks} {candidate_masks.shape}")
 
-			print("Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate") 
+			# print("Thêm chiều mới vào last_hidden_states + Repeat nó số lần bằng số candidate") 
 			last_hidden_states_masks = last_hidden_states.last_hidden_state.unsqueeze(1).repeat(1, max_num_candidate, 1, 1) # batch_size * num_candidate * 512 * 768
 
-			print("Nhân candidate mask với last_hidden_states mask")
+			# print("Nhân candidate mask với last_hidden_states mask")
 			span_masks = candidate_masks.view(batch_size, max_num_candidate, 512, 1).repeat(1, 1, 1, 768) * last_hidden_states_masks # d_model = 768, max_sequence_len = 512
 
-			print("Đưa vào mô hình dự đoán") 
+			# print("Đưa vào mô hình dự đoán") 
 			logits = model.forward(span_masks)
 
 			for i, label in enumerate(document_labels):
 				label += (max_num_candidate - len(label)) * [0]
-			document_labels = torch.tensor(document_labels).to(device)
-			print(f"document_labels: {document_labels} {document_labels.shape}")
-			print(f"logits shape: {logits.shape}")
+			document_labels = torch.tensor(document_labels).type(torch.FloatTensor).to(device)
+			# print(f"document_labels: {document_labels} {document_labels.shape}")
+			# print(f"logits shape: {logits.shape}")
 			# Tính loss giữa dự đoán và label
-			output = loss(logits.view(4, 500), document_labels)
+			output = loss(logits.view(4, 500).type(torch.FloatTensor).to(device), document_labels)
 
 
 			# Backpropagation
 			output.backward()
 
-			if (i % 4 == 0):
-				print(f"Epoch: {epoch} \t Iter: {i} \t Loss: {output}")
+			print(f"Epoch: {epoch} \t Iter: {i} \t Loss: {output}")
 
 			# Adjust learning weights based on current gradient
 			optim.step()

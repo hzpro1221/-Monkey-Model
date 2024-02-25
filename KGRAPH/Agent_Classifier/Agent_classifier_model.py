@@ -44,12 +44,12 @@ class Agent_Classifier(nn.Module):
 
 	def forward(self, span_masks):
 
-		print("------------start Agent_Classifier---------------")
+		# print("------------start Agent_Classifier---------------")
 		# Tổng tất cả các vector biểu diễn các token trong span theo chiều row  
-		print(f"Vector input: {span_masks} {span_masks.shape}")
+		# print(f"Vector input: {span_masks} {span_masks.shape}")
 		# print(f"Compare: {torch.eq(span_masks[0][0], span_masks[0][1])} {torch.eq(span_masks[0][0], span_masks[0][300])}")
 		x = torch.sum(span_masks, dim=-2) 
-		print(f"Tổng tất cả các vector biểu diễn các token trong span theo chiều row: {x} {x.shape}")
+		# print(f"Tổng tất cả các vector biểu diễn các token trong span theo chiều row: {x} {x.shape}")
 		# Layer Normalize 
 		x = self.layer_norm1.forward(x)
 
@@ -68,7 +68,7 @@ class Agent_Classifier(nn.Module):
 		# Layer Normalize  
 		x = self.layer_norm2.forward(x)
 
-		print(f"Tổng tất cả các vector biểu diễn các token trong span theo chiều column: {x} {x.shape}")
+		# print(f"Tổng tất cả các vector biểu diễn các token trong span theo chiều column: {x} {x.shape}")
 
 		# Feed forward
 		x = self.FeedForward2_layer_1(x)
@@ -79,8 +79,8 @@ class Agent_Classifier(nn.Module):
 		x = self.FeedForward2_activation_3(x)
 		x = self.FeedForward2_layer_4(x)
 
-		print(f"output: {x} {x.shape}")
-		print("------------finish Agent_Classifier---------------")
+		# print(f"output: {x} {x.shape}")
+		# print("------------finish Agent_Classifier---------------")
 		return x 
 
 	def save_checkpoint(self):
