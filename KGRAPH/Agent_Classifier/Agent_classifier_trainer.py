@@ -71,15 +71,15 @@ if __name__ == '__main__':
 
 			# Tạo mask full 0, thay thế các vị trí có token của span -> 1
 			for i, candidate_mask in enumerate(candidate_masks):
-				for candidate in enumerate(document_candidates[i]):
+				for j, candidate in enumerate(document_candidates[i]):
 					padding = [0 for _ in range(512)] # 512 is the maximum length of input
 					for pos in range(candidate.start.start, candidate.end.end):
 						padding[pos] = 1
-						print(f"padding: {padding}")
 					candidate_mask.append(padding)
 					# print(f"sample {i}, candidate {j}: {candidate_mask}")
 			# Số candidate lớn nhất trong batch
 			max_num_candidate = 500 
+
 
 			padding_list = [[0 for _ in range(512)]]
 			# Thêm padding để kích cỡ ma trận các candidate của các sample bằng nhau
@@ -87,6 +87,9 @@ if __name__ == '__main__':
 				# print(f"padding: {padding}")
 				candidate_mask += (max_num_candidate - len(candidate_mask)) * padding_list
 
+			# Thêm padding vào label để kích cỡ thành 512
+			for label in document_labels:
+				label = (max_num_candidate - len(label)) * [0]
 
 			# print(f"Shape for candidates: {len(candidate_masks[0])} {len(candidate_masks[1])} {len(candidate_masks[2])} {len(candidate_masks[3])}")
 
@@ -104,8 +107,14 @@ if __name__ == '__main__':
 			print("Đưa vào mô hình dự đoán") 
 			logits = model.forward(span_masks)
 
+			for i, label in enumerate(document_labels):
+				label += (max_num_candidate - len(label)) * [0]
+			document_labels = torch.tensor(document_labels).to(device)
+			print(f"document_labels: {document_labels} {document_labels.shape}")
+			print(f"logits shape: {logits.shape}")
 			# Tính loss giữa dự đoán và label
-			output = loss(logits, document_labels).to(device)
+			output = loss(logits.view(4, 500), document_labels)
+
 
 			# Backpropagation
 			output.backward()

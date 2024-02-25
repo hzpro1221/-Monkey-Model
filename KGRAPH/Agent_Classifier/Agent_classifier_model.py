@@ -28,10 +28,10 @@ class Agent_Classifier(nn.Module):
 		self.FeedForward1_layer_4 = nn.Linear(layer_size, d_model)
 
 		# Layer Normalize
-		self.layer_norm2 = LayerNorm(500) # Max candidate
+		self.layer_norm2 = LayerNorm(1) # Max candidate
 
 		# Feed forward
-		self.FeedForward2_layer_1 = nn.Linear(500, layer_size) # Max candidate, layer size
+		self.FeedForward2_layer_1 = nn.Linear(1, layer_size) # Max candidate, layer size
 		self.FeedForward2_activation_1 = nn.ReLU() 
 		self.FeedForward2_layer_2 = nn.Linear(layer_size, layer_size)
 		self.FeedForward2_activation_2 = nn.ReLU()
@@ -63,11 +63,12 @@ class Agent_Classifier(nn.Module):
 		x = self.FeedForward1_layer_4(x)
 
 		# Tổng tất cả các vector biểu diễn các token trong span theo chiều column
-		x = torch.sum(x, dim=-1)
-		print(f"Tổng tất cả các vector biểu diễn các token trong span theo chiều column: {x} {x.shape}")
+		x = torch.sum(x, dim=-1, keepdim=True)
 
 		# Layer Normalize  
 		x = self.layer_norm2.forward(x)
+
+		print(f"Tổng tất cả các vector biểu diễn các token trong span theo chiều column: {x} {x.shape}")
 
 		# Feed forward
 		x = self.FeedForward2_layer_1(x)
